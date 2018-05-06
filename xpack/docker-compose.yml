@@ -38,7 +38,8 @@ services:
     links:
       - nginx-proxy
     environment:
-      - EMAIL_DOMAIN=*
+      # - EMAIL_DOMAIN=*
+      - VALID_EMAIL_FILE=/usr/valid_emails
       - UPSTREAM=http://nginx-proxy:8080/
       - HTTP_ADDRESS=http://:4180
       - APPROVAL_PROMPT=auto
@@ -51,7 +52,7 @@ services:
       - PROVIDER=google
       # oauth2 credentials
       - CLIENT_ID=<OAUTH_CLIENT_ID>
-      - CLIENT_SECRET=<OAUTH_CLIENT_SECRET>
+      - CLIENT_SECRET=<OAUTH_ClIENT_SECRET>
   nginx-proxy:
     build: ../nginx_proxy
     links:

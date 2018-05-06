@@ -4,6 +4,7 @@ RUN go get github.com/bitly/oauth2_proxy
 
 WORKDIR /usr
 ADD start.sh /usr
+ADD valid_emails /usr
 RUN ["chmod", "+x", "start.sh"]
 EXPOSE 4180
 

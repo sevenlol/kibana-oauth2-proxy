@@ -1,7 +1,9 @@
 #!/bin/bash
 
+cat $VALID_EMAIL_FILE
+
 oauth2_proxy \
- --email-domain=$EMAIL_DOMAIN \
+ --authenticated-emails-file="$VALID_EMAIL_FILE" \
  --upstream=$UPSTREAM \
  --http-address=$HTTP_ADDRESS \
  --approval-prompt=$APPROVAL_PROMPT \
