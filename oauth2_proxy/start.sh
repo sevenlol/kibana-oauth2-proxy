@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cat $VALID_EMAIL_FILE
-
 oauth2_proxy \
  --authenticated-emails-file="$VALID_EMAIL_FILE" \
  --upstream=$UPSTREAM \
