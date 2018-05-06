@@ -44,12 +44,33 @@ NOTE:
 - CLIENT_SECRET=<OAUTH_CLIENT_SECRET>
 ```
 
+## Authenticated Emails
+
+`--authenticated-emails-file` flag in `oauth2_proxy` is used to specify a list of authenticated (white-listed) email addresses.
+
+Modify `/oauth2_proxy/valid_emails` if you want to add new authenticated email (one email per line). Only emails listed in this file will be able to view kibana dashboard.
+
+E.g., **valid_emails**
+```
+sevenlol1007@gmail.com
+helloworld@gmail.com
+```
+
 ## Run
 
 ```
 cd xpack
 docker-compose up -d
 ```
+
+or
+
+```
+cd xpack
+docker-compose up --build -d
+```
+
+if configuration in oauth2_proxy or nginx has changed.
 
 ## Cleanup
 
