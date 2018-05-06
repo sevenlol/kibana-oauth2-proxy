@@ -1,0 +1,70 @@
+version: '2.1'
+
+services:
+  elasticsearch:
+    # ports:
+    #   - "9200:9200"
+    image: docker.elastic.co/elasticsearch/elasticsearch-platinum:6.1.1
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      # - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTIC_PASSWORD=changeme
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+  kibana:
+    # ports:
+    #   - "5601:5601"
+    image: docker.elastic.co/kibana/kibana:6.1.1
+    container_name: kibana
+    environment:
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - elasticsearch.username=elastic
+      - elasticsearch.password=changeme
+      - "elasticsearch.requestHeadersWhitelist=[ es-security-runas-user, authorization ]"
+      - "xpack.monitoring.elasticsearch.requestHeadersWhitelist=[ es-security-runas-user, authorization ]"
+  oauth2-proxy:
+    build: ../oauth2_proxy
+    restart: always
+    ports:
+      - "4180:4180"
+    links:
+      - nginx-proxy
+    environment:
+      - EMAIL_DOMAIN=*
+      - UPSTREAM=http://nginx-proxy:8080/
+      - HTTP_ADDRESS=http://:4180
+      - APPROVAL_PROMPT=auto
+      # redirect uri, configure this in the oauth2 provider console
+      - REDIRECT_URL=http://localhost:4180/oauth2/callback
+      - COOKIE_NAME=_oauth2_proxy
+      - COOKIE_SECRET=secretsecret
+      - COOKIE_SECURE=false
+      # google oauth2 provider
+      - PROVIDER=google
+      # oauth2 credentials
+      - CLIENT_ID=<OAUTH_CLIENT_ID>
+      - CLIENT_SECRET=<OAUTH_CLIENT_SECRET>
+  nginx-proxy:
+    build: ../nginx_proxy
+    links:
+      - elasticsearch
+    environment:
+      - NGINX_PORT=8080
+      # hard-coded basic auth header (base64(elastic:changeme))
+      # for the kibana/elasticsearch login
+      - DIGEST=ZWxhc3RpYzpjaGFuZ2VtZQ==
+      - DOLLAR=$$
+      - BASE_PATH=/
+    command: /bin/bash -c "envsubst < /etc/nginx/nginx-template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    restart: always
+volumes:
+  elasticsearch_data:
+    driver: local
