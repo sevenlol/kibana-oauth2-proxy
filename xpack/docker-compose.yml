@@ -37,6 +37,9 @@ services:
       - "4180:4180"
     links:
       - nginx-proxy
+    volumes:
+      # mount valid_emails file from host path
+      - ${PWD}/valid_emails:/usr/valid_emails
     environment:
       # - EMAIL_DOMAIN=*
       - VALID_EMAIL_FILE=/usr/valid_emails
@@ -52,7 +55,7 @@ services:
       - PROVIDER=google
       # oauth2 credentials
       - CLIENT_ID=<OAUTH_CLIENT_ID>
-      - CLIENT_SECRET=<OAUTH_ClIENT_SECRET>
+      - CLIENT_SECRET=<OAUTH_CLIENT_SECRET>
   nginx-proxy:
     build: ../nginx_proxy
     links:
